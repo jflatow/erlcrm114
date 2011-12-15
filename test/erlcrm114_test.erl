@@ -4,5 +4,5 @@
 
 basic_test() ->
     {ok, Ref} = erlcrm114:new(),
-    ?assertEqual(ok, erlcrm114:fnc(Ref)).
+    ?assertEqual(ok, erlcrm114:learn(Ref, none)).
 
