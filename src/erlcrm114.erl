@@ -1,6 +1,7 @@
 -module(erlcrm114).
 
 -export([new/0,
+         new/1,
          learn/2,
          classify/2]).
 
@@ -20,6 +21,9 @@ load() ->
     erlang:load_nif(filename:join(PrivDir, ?MODULE), 0).
 
 new() ->
+    new([]).
+
+new(_Options) ->
     ?nif_not_loaded.
 
 learn(_Ref, _Text) ->
