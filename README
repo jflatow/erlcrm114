@@ -1,7 +1,7 @@
 Quick Start
 ===========
 
-Meant to work with `https://github.com/jflatow/libcrm114`_ or similar.
+Meant to work with https://github.com/jflatow/libcrm114 or similar.
 Assuming you have already installed libcrm114 (and libtre, which libcrm114 depends on)::
 
         make test
@@ -23,5 +23,6 @@ To get the result record definitions::
 
         -include("erlcrm114.hrl").
 
-For more info read the libcrm114 docs,
-and check `test/erlcrm114_test.erl` for some more usage examples.
+For more info on the classifiers / low-level api, read the libcrm114 docs.
+Check the tests (e.g. https://github.com/jflatow/erlcrm114/blob/master/test/erlcrm114_test.erl ),
+for some more usage examples.
