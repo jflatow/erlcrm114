@@ -1,0 +1,27 @@
+Quick Start
+===========
+
+Meant to work with `https://github.com/jflatow/libcrm114`_ or similar.
+Assuming you have already installed libcrm114 (and libtre, which libcrm114 depends on)::
+
+        make test
+
+The tests should pass, now add it as a rebar dep to your Erlang app::
+
+        > {ok, Classifier} = erlcrm114:new().
+        > {ok, Classifier} = erlcrm114:learn(Classifier, <<"text as a binary">>).
+        > {ok, Classifier} = erlcrm114:learn(Classifier, <<"a counterexample">>, 1).
+        > case erlcrm114:classify(Classifier, <<"text">>) of
+               #result{bestmatch=0} ->
+                 success; %% class 0
+               #result{bestmatch=1} ->
+                 failure; %% class 1
+               ...
+          end.
+
+To get the result record definitions::
+
+        -include("erlcrm114.hrl").
+
+For more info read the libcrm114 docs,
+and check `test/erlcrm114_test.erl` for some more usage examples.
