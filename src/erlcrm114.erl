@@ -37,13 +37,13 @@ new(_Options) ->
     ?nif_not_loaded.
 
 -spec learn/2 :: (classifier(), binary()) ->
-    'ok' | error().
+    {'ok', classifier()} | error().
 
 learn(_Ref, _Text) ->
     ?nif_not_loaded.
 
 -spec learn/3 :: (classifier(), binary(), non_neg_integer()) ->
-    'ok' | error().
+    {'ok', classifier()} | error().
 
 learn(_Ref, _Text, _ClassNum) ->
     ?nif_not_loaded.

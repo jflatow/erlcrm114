@@ -194,7 +194,7 @@ ErlCRM114_learn(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
     goto badarg;
   if (status != CRM114_OK)
     goto crmerr;
-  return ATOM_OK;
+  return enif_make_tuple2(env, ATOM_OK, argv[0]);
 
  badarg:
   return enif_make_tuple2(env, ATOM_ERROR, ATOM_BADARG);
