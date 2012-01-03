@@ -1,4 +1,5 @@
 #include <crm114/crm114.h>
+#include <string.h>
 #include "erl_nif.h"
 
 /* Static Erlang Terms */
@@ -36,11 +37,12 @@ static ERL_NIF_TERM LIST_EMPTY;
 static ERL_NIF_TERM ErlCRM114_new(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]);
 static ERL_NIF_TERM ErlCRM114_learn(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]);
 static ERL_NIF_TERM ErlCRM114_classify(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]);
+static ERL_NIF_TERM ErlCRM114_from_binary(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]);
+static ERL_NIF_TERM ErlCRM114_to_binary(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]);
 static void         ErlCRM114_free(ErlNifEnv *env, void *res);
 
 typedef unsigned long long ErlCRM114Flag;
 typedef struct {
-  CRM114_CONTROLBLOCK *cb;
   CRM114_DATABLOCK *db;
 } ErlCRM114Classifier;
 
@@ -91,7 +93,7 @@ ErlCRM114_new_flag(ErlNifEnv *env, const ERL_NIF_TERM atom) {
 
 static ERL_NIF_TERM
 ErlCRM114_new(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
-  ErlCRM114Classifier *classifier = NULL;
+  ErlCRM114Classifier *classifier;
   ErlCRM114Flag flags = 0;
   ErlNifBinary regex = {0};
   ERL_NIF_TERM head, classes = LIST_EMPTY, opts = argv[0];
@@ -154,12 +156,12 @@ ErlCRM114_new(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
   db = crm114_new_db(cb);
   if (db == NULL)
     goto ealloc;
+  free(cb);
 
   // create the resource
   classifier = enif_alloc_resource(ErlCRM114ClassifierType, sizeof(ErlCRM114Classifier));
   if (classifier == NULL)
     goto ealloc;
-  classifier->cb = cb;
   classifier->db = db;
   return enif_make_tuple2(env, ATOM_OK, make_reference(env, classifier));
 
@@ -267,11 +269,58 @@ ErlCRM114_classify(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
   return make_strerror(env, crm114_strerror(status));
 }
 
+static ERL_NIF_TERM
+ErlCRM114_from_binary(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
+  ErlCRM114Classifier *classifier;
+  ErlNifBinary binary;
+  CRM114_DATABLOCK *db = NULL;
+
+  if (!enif_inspect_binary(env, argv[0], &binary))
+    goto badarg;
+
+  db = malloc(binary.size);
+  if (db == NULL)
+    goto ealloc;
+  memcpy(db, binary.data, binary.size);
+
+  classifier = enif_alloc_resource(ErlCRM114ClassifierType, sizeof(ErlCRM114Classifier));
+  if (classifier == NULL)
+    goto ealloc;
+  classifier->db = db;
+  return enif_make_tuple2(env, ATOM_OK, make_reference(env, classifier));
+
+ badarg:
+  if (db) free(db);
+  return enif_make_tuple2(env, ATOM_ERROR, ATOM_BADARG);
+
+ ealloc:
+  if (db) free(db);
+  return enif_make_tuple2(env, ATOM_ERROR, ATOM_EALLOC);
+}
+
+static ERL_NIF_TERM
+ErlCRM114_to_binary(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
+  ErlCRM114Classifier *classifier;
+  ErlNifBinary binary;
+
+  if (!enif_get_resource(env, argv[0], ErlCRM114ClassifierType, (void **)&classifier))
+    goto badarg;
+  if (!enif_alloc_binary(classifier->db->cb.datablock_size, &binary))
+    goto ealloc;
+  memcpy(binary.data, classifier->db, binary.size);
+  return enif_make_binary(env, &binary);
+
+ badarg:
+  return enif_make_tuple2(env, ATOM_ERROR, ATOM_BADARG);
+
+ ealloc:
+  return enif_make_tuple2(env, ATOM_ERROR, ATOM_EALLOC);
+}
+
 static void
 ErlCRM114_free(ErlNifEnv *env, void *res) {
   ErlCRM114Classifier *classifier = (ErlCRM114Classifier *)res;
   free(classifier->db);
-  free(classifier->cb);
 }
 
 /* NIF Initialization */
@@ -283,6 +332,8 @@ static ErlNifFunc nif_funcs[] =
     {"learn", 3, ErlCRM114_learn},
     {"classify", 2, ErlCRM114_classify},
     {"classify", 3, ErlCRM114_classify},
+    {"from_binary", 1, ErlCRM114_from_binary},
+    {"to_binary", 1, ErlCRM114_to_binary},
   };
 
 static int

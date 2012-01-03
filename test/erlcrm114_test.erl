@@ -77,6 +77,15 @@ sanity_test(Opts) ->
     ?assertBadArg(erlcrm114:classify(Cls, <<"la la la">>, [flag])),
     ?assertBadArg(erlcrm114:classify(Cls, "not la la la")).
 
+serdes_test() ->
+    {ok, Orig} = erlcrm114:new(),
+    ?assertBadArg(erlcrm114:learn(Orig, <<"text">>, 2)),
+    ?assertEqual({ok, Orig}, erlcrm114:learn(Orig, <<"not-text">>, 1)),
+    ?assertEqual({ok, Orig}, erlcrm114:learn(Orig, <<"text">>)),
+    {ok, Copy} = erlcrm114:from_binary(erlcrm114:to_binary(Orig)),
+    ?assertMatch(#result{bestmatch=0}, erlcrm114:classify(Copy, <<"text">>, [detail])),
+    ?assertMatch(#result{bestmatch=1}, erlcrm114:classify(Copy, <<"not-text">>)).
+
 classic_test(Opts) ->
     {ok, Cls} = load_classifier("classic", Opts),
     ?assertMatch(#result{bestmatch=0}, erlcrm114:classify(Cls, read_doc("macbeth_frag.txt"))),

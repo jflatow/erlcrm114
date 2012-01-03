@@ -5,7 +5,9 @@
          learn/2,
          learn/3,
          classify/2,
-         classify/3]).
+         classify/3,
+         from_binary/1,
+         to_binary/1]).
 
 -include("erlcrm114.hrl").
 
@@ -58,4 +60,16 @@ classify(_Ref, _Text) ->
     #result{} | error().
 
 classify(_Ref, _Text, _Options) ->
+    ?nif_not_loaded.
+
+-spec from_binary/1 :: (binary()) ->
+    {'ok', classifier()} | error().
+
+from_binary(_Binary) ->
+    ?nif_not_loaded.
+
+-spec to_binary/1 :: (classifier()) ->
+    binary() | error().
+
+to_binary(_Ref) ->
     ?nif_not_loaded.
