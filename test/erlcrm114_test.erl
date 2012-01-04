@@ -71,11 +71,10 @@ sanity_test(Opts) ->
     {ok, Cls} = erlcrm114:new(Opts),
     ?assertBadArg(erlcrm114:learn(Cls, <<"text">>, 2)),
     ?assertEqual({ok, Cls}, erlcrm114:learn(Cls, <<"not-text">>, 1)),
-    ?assertEqual({ok, Cls}, erlcrm114:learn(Cls, <<"text">>)),
-    ?assertMatch(#result{bestmatch=0}, erlcrm114:classify(Cls, <<"text">>, [detail])),
+    ?assertEqual({ok, Cls}, erlcrm114:learn(Cls, ["text"])),
+    ?assertMatch(#result{bestmatch=0}, erlcrm114:classify(Cls, ["t", <<"ext">>], [detail])),
     ?assertMatch(#result{bestmatch=1}, erlcrm114:classify(Cls, <<"not-text">>)),
-    ?assertBadArg(erlcrm114:classify(Cls, <<"la la la">>, [flag])),
-    ?assertBadArg(erlcrm114:classify(Cls, "not la la la")).
+    ?assertBadArg(erlcrm114:classify(Cls, <<"la la la">>, [flag])).
 
 serdes_test() ->
     {ok, Orig} = erlcrm114:new(),

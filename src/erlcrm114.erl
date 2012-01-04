@@ -38,25 +38,25 @@ new() ->
 new(_Options) ->
     ?nif_not_loaded.
 
--spec learn/2 :: (classifier(), binary()) ->
+-spec learn/2 :: (classifier(), iolist()) ->
     {'ok', classifier()} | error().
 
 learn(_Ref, _Text) ->
     ?nif_not_loaded.
 
--spec learn/3 :: (classifier(), binary(), non_neg_integer()) ->
+-spec learn/3 :: (classifier(), iolist(), non_neg_integer()) ->
     {'ok', classifier()} | error().
 
 learn(_Ref, _Text, _ClassNum) ->
     ?nif_not_loaded.
 
--spec classify/2 :: (classifier(), binary()) ->
+-spec classify/2 :: (classifier(), iolist()) ->
     #result{} | error().
 
 classify(_Ref, _Text) ->
     ?nif_not_loaded.
 
--spec classify/3 :: (classifier(), binary(), ['detail']) ->
+-spec classify/3 :: (classifier(), iolist(), ['detail']) ->
     #result{} | error().
 
 classify(_Ref, _Text, _Options) ->

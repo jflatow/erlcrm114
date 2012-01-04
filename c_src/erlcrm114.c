@@ -185,7 +185,7 @@ ErlCRM114_learn(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
 
   if (!enif_get_resource(env, argv[0], ErlCRM114ClassifierType, (void **)&classifier))
     goto badarg;
-  if (!enif_inspect_binary(env, argv[1], &text))
+  if (!enif_inspect_iolist_as_binary(env, argv[1], &text))
     goto badarg;
   if (argc > 2)
     if (!enif_get_int(env, argv[2], &classnum))
@@ -216,7 +216,7 @@ ErlCRM114_classify(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
 
   if (!enif_get_resource(env, argv[0], ErlCRM114ClassifierType, (void **)&classifier))
     goto badarg;
-  if (!enif_inspect_binary(env, argv[1], &text))
+  if (!enif_inspect_iolist_as_binary(env, argv[1], &text))
     goto badarg;
   if (argc > 2) {
     if (enif_is_list(env, opts = argv[2]))
