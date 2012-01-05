@@ -237,7 +237,7 @@ ErlCRM114_classify(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
 
   if (detail) {
     classes = LIST_EMPTY;
-    for (i = 0; i < result.how_many_classes; i++)
+    for (i = result.how_many_classes - 1; i >= 0; i--)
       classes =
         enif_make_list_cell(env,
                             enif_make_tuple8(env,
